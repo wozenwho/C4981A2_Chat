@@ -10,6 +10,7 @@ int main(int argc, char* argv[])
     FILE* fp = 0;
     if(argc < 3)
     {
+        system("stty echo");
         return 1;
     }
     char* host = "127.0.0.1";
@@ -45,11 +46,14 @@ int main(int argc, char* argv[])
     char sBuf[BUFLEN];
     sd = CreateSock();
     if(sd < 0)
+    {
+        system("stty echo");
         return -1;
-
+    }
     int ret = ConnectToServer(sd, host, port);
     if(ret < 0)
     {
+        system("stty echo");
         close(sd);
         return -1;
     }
@@ -66,10 +70,11 @@ int main(int argc, char* argv[])
         pthread_create(&recvThread, NULL, RecvThreadFunc, &sd);
         pthread_create(&sendThread, NULL, SendThreadFunc, &sd);
     }
-    pthread_join(sendThread,NULL);
+    pthread_join(recvThread,NULL);
     printf("exited from program\n");
     close(sd);
-    fclose(fp);
+    if(fp)
+        fclose(fp);
     system("stty echo");
     return 0;
 }
