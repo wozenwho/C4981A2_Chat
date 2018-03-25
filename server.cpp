@@ -8,6 +8,7 @@ void transmitMessage(int sockfd, size_t index, char* buffer);
 
 size_t  numClients = 0;
 int32_t clientArr[MAX_NUM_CLIENTS];
+int32_t maxi;
 
 int main()
 {
@@ -17,7 +18,7 @@ int main()
     int32_t arg;
     int32_t maxfd;
     int32_t numReady;
-    int32_t maxi;
+    // int32_t maxi;
     int32_t sockfd;
     int32_t bytesToRead;
     int32_t i;
@@ -98,6 +99,7 @@ int main()
                     std::cerr << strerror(errno) << std::endl;
                     exit(1);
                 }
+                numClients++;
                 std::cerr << "Accepted client: " << inet_ntoa(client_addr.sin_addr) << std::endl;
 
                 for (i = 0; i < FD_SETSIZE; i++)
@@ -107,24 +109,24 @@ int main()
                         break;
                     }
 
-                    if (i == FD_SETSIZE)
-                    {
-                        std::cerr << "Reached max num. clients, exiting." << std::endl;
-                    }
-                    // Add new descriptor to set
-                    FD_SET(newClient, &allset);
-                    if (newClient > maxfd)
-                    {
-                        maxfd = newClient;
-                    }
-                    if (i > maxi)
-                    {
-                        maxi = i;
-                    }
-                    if (--numReady <= 0)
-                    {
-                        continue;
-                    }
+                if (i == FD_SETSIZE)
+                {
+                    std::cerr << "Reached max num. clients, exiting." << std::endl;
+                }
+                // Add new descriptor to set
+                FD_SET(newClient, &allset);
+                if (newClient > maxfd)
+                {
+                    maxfd = newClient;
+                }
+                if (i > maxi)
+                {
+                    maxi = i;
+                }
+                if (--numReady <= 0)
+                {
+                    continue;
+                }
 
             }
 
@@ -137,6 +139,7 @@ int main()
                 }
                 if (FD_ISSET(sockfd, &rset))    // issue here?
                 {
+                    memset(buffer, '\0', sizeof(buffer));
                     bufferPtr = buffer;
                     bytesToRead = BUFLEN;
                     while ((numRead = read(sockfd, bufferPtr, bytesToRead)) > 0)
@@ -148,36 +151,33 @@ int main()
                     transmitMessage(sockfd, i, buffer);
 
                     // Connection has been closed by client
-                    if (numRead == 0)
+                    if (strlen(buffer) == 0)
                     {
-
+                        std::cerr << "client closed cxn" << std::endl;
+                        close(sockfd);
+                        FD_CLR(sockfd, &allset);
+                        clientArr[i] = -1;
                     }
 
                     // No more readable descriptors
                     if (--numReady <= 0)
                         break;
-
                 }
             }
         }
-
-
-
-
-
-
     }
     return 0;
 }
 
 void transmitMessage(int sockfd, size_t index, char* buffer)
 {
-    for (size_t i = 0; i < numClients; i++)
+
+    for (size_t i = 0; i <= maxi; i++)
     {
-        if (i == index)
-        {
-            continue;
-        }
+        // if (i == index)
+        // {
+        //     continue;
+        // }
         write(clientArr[i], buffer, BUFLEN);
     }
 }
