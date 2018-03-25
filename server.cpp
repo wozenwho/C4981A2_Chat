@@ -20,18 +20,19 @@ int main()
     int32_t maxi;
     int32_t sockfd;
     int32_t bytesToRead;
+    int32_t i;
 
-    
+
     int newClient;
-    
-    
+
+
     char* bufferPtr;
     char buffer[BUFLEN];
     int numRead;
 
     struct  sockaddr_in server;
     struct  sockaddr_in client_addr;
-    size_t  client_len;
+    socklen_t  client_len;
 
     fd_set  rset;
     fd_set  allset;
@@ -47,6 +48,8 @@ int main()
     }
     else
     {
+
+
         arg = 1;
         result = setsockopt(listen_sd, SOL_SOCKET, SO_REUSEADDR, &arg, sizeof(arg));
         if (result == -1)
@@ -69,10 +72,13 @@ int main()
         listen(listen_sd, MAX_NUM_CLIENTS);
 
         maxfd = listen_sd;
-        for (int i = 0; i < MAX_NUM_CLIENTS; i++)
+        for (i = 0; i < MAX_NUM_CLIENTS; i++)
         {
             clientArr[i] = -1;
         }
+        maxi = -1;
+        FD_ZERO(&allset);
+        FD_SET(listen_sd, &allset);
 
 
         running = 1;
@@ -86,20 +92,21 @@ int main()
             if (FD_ISSET(listen_sd, &rset))
             {
                 client_len = sizeof(struct sockaddr_in);
-                newClient = accept(listen_sd, (struct sockaddr*) &client_addr, (socklen_t*) &client_len);
+                newClient = accept(listen_sd, (struct sockaddr*) &client_addr, &client_len);
                 if (newClient == -1)
                 {
                     std::cerr << strerror(errno) << std::endl;
                     exit(1);
                 }
+                std::cerr << "Accepted client: " << inet_ntoa(client_addr.sin_addr) << std::endl;
 
-                for (int i = 0; i < FD_SETSIZE; i++)
-                {
+                for (i = 0; i < FD_SETSIZE; i++)
                     if (clientArr[i] < 0)
                     {
                         clientArr[i] = newClient;
                         break;
                     }
+
                     if (i == FD_SETSIZE)
                     {
                         std::cerr << "Reached max num. clients, exiting." << std::endl;
@@ -118,19 +125,17 @@ int main()
                     {
                         continue;
                     }
-                }
 
-                
             }
 
             // Check all clients for data
-            for (int i = 0; i <= maxi; i++)
+            for (i = 0; i <= maxi; i++)
             {
                 if ((sockfd = clientArr[i]) < 0)
                 {
                     continue;
                 }
-                if (FD_ISSET(sockfd, &rset))
+                if (FD_ISSET(sockfd, &rset))    // issue here?
                 {
                     bufferPtr = buffer;
                     bytesToRead = BUFLEN;
@@ -156,8 +161,8 @@ int main()
             }
         }
 
-        
-        
+
+
 
 
 
