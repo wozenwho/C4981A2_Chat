@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#define BUFLEN 80
+#define BUFLEN 256
 
 typedef struct
 {
