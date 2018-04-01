@@ -65,6 +65,7 @@ void* SendThreadFunc(void* ptr)
         {
             break;
         }
+        printf("%10s%s", "sent:", sBuf);
     }
     return NULL;
 }
@@ -97,7 +98,8 @@ void* SendThreadFuncSave(void* ptr)
         {
             break;
         }
-        fprintf(arg->fp,"%s", sBuf);
+        printf("%10s%s", "sent: ", sBuf);
+        fprintf(arg->fp,"%10s%s", "sent: ", sBuf);
     }
     return NULL;
 }

@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 
             case 'f':
             saveFlag = 1;
-            printf("flag is set\n");
+            printf("save flag is set\n");
             break;
 
         }
@@ -40,7 +40,6 @@ int main(int argc, char* argv[])
         fp = fopen(filename, "a");
     }
         
-
     pthread_t recvThread, sendThread;
     int sd = 0;
     char sBuf[BUFLEN];
@@ -70,11 +69,12 @@ int main(int argc, char* argv[])
         pthread_create(&recvThread, NULL, RecvThreadFunc, &sd);
         pthread_create(&sendThread, NULL, SendThreadFunc, &sd);
     }
-    pthread_join(recvThread,NULL);
-    printf("exited from program\n");
+    pthread_join(sendThread,NULL);
     close(sd);
     if(fp)
+    {
         fclose(fp);
+    }
     system("stty echo");
     return 0;
 }
