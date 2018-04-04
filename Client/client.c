@@ -33,7 +33,7 @@ int WaitForPacket(int sd, char* rBuf )
     int bytes_to_read = BUFLEN, n = 0;
     while ((n = recv (sd, bp, bytes_to_read, 0)) < BUFLEN)
 	{
-        if(n < 0)
+        if(n <= 0)
             return -1;
 		bp += n;
 		bytes_to_read -= n;
@@ -51,6 +51,7 @@ void* RecvThreadFunc(void* ptr)
         fflush(stdout);
     }
     printf("Connection ended\n");
+    close(sd);
     return NULL;
 }
 
@@ -83,6 +84,7 @@ void* RecvThreadFuncSave(void* ptr)
 
     }
     printf("Connection ended\n");
+    close(sd);
     return NULL;
 }
 

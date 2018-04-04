@@ -5,12 +5,11 @@
 int main(int argc, char* argv[])
 {
     char filename[32];
-    system("stty -echo");
     int opt, saveFlag = 0;
     FILE* fp = 0;
-    if(argc < 3)
+    if(argc <= 3)
     {
-        system("stty echo");
+        fprintf(stderr, "usage: %s [-h ip addr] [-p port number] <-f>\n", argv[0]);
         return 1;
     }
     char* host = "127.0.0.1";
@@ -34,28 +33,29 @@ int main(int argc, char* argv[])
 
         }
     }
-    if(saveFlag)
-    {
-        sprintf(filename, "%s.txt", host);
-        fp = fopen(filename, "a");
-    }
         
     pthread_t recvThread, sendThread;
     int sd = 0;
-    char sBuf[BUFLEN];
     sd = CreateSock();
     if(sd < 0)
     {
-        system("stty echo");
+        fprintf(stderr, "Could not create socket\n");
         return -1;
     }
     int ret = ConnectToServer(sd, host, port);
     if(ret < 0)
     {
-        system("stty echo");
+        fprintf(stderr, "Connection to Server Failed\n");
         close(sd);
         return -1;
     }
+    if(saveFlag)
+    {
+        sprintf(filename, "%s_room_history.txt", host);
+        fp = fopen(filename, "a");
+    }
+    fprintf(stdout, "Connected to %s\n", host);
+    system("stty -echo");
     if(fp)
     {
         SaveArg arg;
