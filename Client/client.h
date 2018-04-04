@@ -22,6 +22,7 @@ typedef struct
 
 int CreateSock();
 int ConnectToServer(int sd, char* host, int port);
+int WaitForPacket(int sd, char* rBuf );
 void* RecvThreadFunc(void* ptr);
 void* SendThreadFunc(void* ptr);
 void* RecvThreadFuncSave(void* ptr);

@@ -1,3 +1,25 @@
+/*------------------------------------------------------------------------------
+--	Source File:	c4981_asn3_client.c
+--
+--	Program:		Chat Client
+--
+--  Functions       
+--
+--	Date:			Apr 4 2018
+--
+--	Designer:		Jeffrey Chou
+--
+--	Programmer:		Jeffrey Chou
+--
+--	Notes:
+--	Chat client that connects to a server passed in via command line arguments.
+--  Creates a thread for receiving from the server and for getting input from the
+--  user. 
+--
+--  Contains the main driver of the client program
+--
+-------------------------------------------------------------------------------*/
+
 #include "client.h"
 
 #define OPTIONS "?h:p:f"
