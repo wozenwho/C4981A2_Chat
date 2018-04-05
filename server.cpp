@@ -181,10 +181,10 @@ void transmitMessage(int sockfd, size_t index, char* buffer)
 
     for (size_t i = 0; i <= maxi; i++)
     {
-        // if (i == index)
-        // {
-        //     continue;
-        // }
+        if (clientArr[i] == sockfd)
+        {
+            continue;
+        }
         write(clientArr[i], transmitBuffer, BUFLEN);
     }
 }
