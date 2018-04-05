@@ -8,6 +8,8 @@ void transmitMessage(int sockfd, size_t index, char* buffer);
 
 size_t  numClients = 0;
 int32_t clientArr[MAX_NUM_CLIENTS];
+struct sockaddr_in* sockaddrArr[MAX_NUM_CLIENTS];
+
 int32_t maxi;
 
 int main()
@@ -89,7 +91,7 @@ int main()
             rset = allset;
             numReady = select(maxfd + 1, &rset, NULL, NULL, NULL);
 
-            // Handle new client connection
+            // Handle new client connectionclientArr
             if (FD_ISSET(listen_sd, &rset))
             {
                 client_len = sizeof(struct sockaddr_in);
@@ -106,6 +108,9 @@ int main()
                     if (clientArr[i] < 0)
                     {
                         clientArr[i] = newClient;
+                        sockaddrArr[i] = (struct sockaddr_in*) malloc(sizeof(struct sockaddr_in));
+                        memset(sockaddrArr[i], 0, sizeof(struct sockaddr_in));
+                        memcpy(sockaddrArr[i], &client_addr, sizeof(struct sockaddr_in));
                         break;
                     }
 
@@ -171,6 +176,8 @@ int main()
 
 void transmitMessage(int sockfd, size_t index, char* buffer)
 {
+    char transmitBuffer[BUFLEN];
+    sprintf(transmitBuffer, "%s : %s\n", inet_ntoa(sockaddrArr[index]->sin_addr), buffer);
 
     for (size_t i = 0; i <= maxi; i++)
     {
@@ -178,6 +185,6 @@ void transmitMessage(int sockfd, size_t index, char* buffer)
         // {
         //     continue;
         // }
-        write(clientArr[i], buffer, BUFLEN);
+        write(clientArr[i], transmitBuffer, BUFLEN);
     }
 }
