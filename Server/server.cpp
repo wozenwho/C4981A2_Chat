@@ -83,6 +83,8 @@ int main()
     memset(&server, 0, sizeof(struct sockaddr_in));
     memset(&client_addr, 0, sizeof(struct sockaddr_in));
 
+    memset(sockaddrArr, 0, MAX_NUM_CLIENTS * sizeof(sockaddr_in*));
+
     if ((listen_sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         std::cerr << strerror(errno) << std::endl;
@@ -198,6 +200,8 @@ int main()
                     if (strlen(buffer) == 0)
                     {
                         std::cerr << "closed client: " << inet_ntoa(sockaddrArr[i]->sin_addr) << std::endl;
+                        free(sockaddrArr[i]);
+                        sockaddrArr[i] = 0;
                         close(sockfd);
                         FD_CLR(sockfd, &allset);
                         clientArr[i] = -1;
@@ -208,6 +212,15 @@ int main()
                         break;
                 }
             }
+        }
+    }
+
+    // Free remaining allocated sockaddr_in structs
+    for (int i = 0; i < MAX_NUM_CLIENTS; i++)
+    {
+        if (sockaddrArr[0] != 0)
+        {
+            free(sockaddrArr[i]);
         }
     }
     return 0;
