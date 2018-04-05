@@ -200,6 +200,7 @@ int main()
                         std::cerr << "closed client: " << inet_ntoa(sockaddrArr[i]->sin_addr) << std::endl;
                         close(sockfd);
                         FD_CLR(sockfd, &allset);
+                        free(sockaddrArr[i]);
                         clientArr[i] = -1;
                     }
 
