@@ -158,7 +158,7 @@ int main()
                     // Connection has been closed by client
                     if (strlen(buffer) == 0)
                     {
-                        std::cerr << "client closed cxn" << std::endl;
+                        std::cerr << "closed client: " << inet_ntoa(sockaddrArr[i]->sin_addr) << std::endl;
                         close(sockfd);
                         FD_CLR(sockfd, &allset);
                         clientArr[i] = -1;
@@ -177,7 +177,7 @@ int main()
 void transmitMessage(int sockfd, size_t index, char* buffer)
 {
     char transmitBuffer[BUFLEN];
-    sprintf(transmitBuffer, "%s : %s\n", inet_ntoa(sockaddrArr[index]->sin_addr), buffer);
+    sprintf(transmitBuffer, "%s : %s", inet_ntoa(sockaddrArr[index]->sin_addr), buffer);
 
     for (size_t i = 0; i <= maxi; i++)
     {
