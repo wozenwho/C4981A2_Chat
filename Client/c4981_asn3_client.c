@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
         fprintf(stderr, "usage: %s [-h ip addr] [-p port number] <-f>\n", argv[0]);
         return 1;
     }
-    char* host = "127.0.0.1";
-    int port = 7000;
+    char* host = 0;
+    int port = -1;
     while((opt = getopt(argc, argv, OPTIONS)) != -1)
     {
         switch (opt)
@@ -46,6 +46,11 @@ int main(int argc, char* argv[])
 
             case 'p':
             port = atoi(optarg);
+            if(port < 0)
+            {
+                fprintf(stderr, "Invalid port number\n");
+                return 1;
+            }
             break;
 
             case 'f':
@@ -54,6 +59,18 @@ int main(int argc, char* argv[])
             break;
 
         }
+    }
+
+    if(host == 0)
+    {
+        fprintf(stderr, "host ip address is mandatory\n");
+        return 1;
+    }
+
+    if(port == -1)
+    {
+        fprintf(stderr, "port number is mandatory\n");
+        return 1;
     }
         
     pthread_t recvThread, sendThread;
